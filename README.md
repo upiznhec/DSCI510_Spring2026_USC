@@ -34,6 +34,8 @@ This project investigates whether surprising English Premier League (hereinafter
     │ ├── test.py # Testing and validation script
     │ └── EPLClubsXNameList.txt # A list of X handles of EPL clubs
     │
+    ├── doc/
+    │ ├── Nanpu_Chen_progress_report.pdf # Progress report as of April 8, 2026
     ├── .gitignore # Excludes data, results, API keys
     └── README.md
 
@@ -49,3 +51,4 @@ Please create a file under main called "APIkeys" and store the key and token in 
     │ ├── `APIkeys/matches_key.txt`
     │ └──`APIkeys/X_bearertoken.txt`
     ├── src/
+    ├── doc/
