@@ -1,4 +1,4 @@
-#Analyzing the Correlation Between Surprising Match Results and X Tweet Engagement Levels for English Premier League Clubs in the 2025-2026 Season
+##Analyzing the Correlation Between Surprising Match Results and X Tweet Engagement Levels for English Premier League Clubs in the 2025-2026 Season
 **DSCI 510 – Principles of Programming for Data Science**  
 Nanpu Chen
 University of Southern California – Spring 2026
@@ -8,8 +8,7 @@ This project investigates whether surprising English Premier League (hereinafter
 
 ## Files
 **EPLClubsXNameList.txt** is a list of X handles (e.g. "@ManCity", "afcbournemouth", etc.) which 2025/26 season EPL clubs use on X (former twitter)
-**bets_scrape.py** has a function scrape_bets that automates the process of downloading a csv file of pre-match betting odds from:
-- https://www.football-data.co.uk/
+**bets_scrape.py** has a function scrape_bets that automates the process of downloading a csv file of pre-match betting odds from https://www.football-data.co.uk/
 **games_scrape.py** contains 2 functions:
   1.scrape_matches(api_key,url,season) downloads all match data from https://www.football-data.org/, accessed through a specific API key. The API key oughts to be stored in position "../APIkeys/matches_key.txt"
   2.all_kickoff(api_key, url, season) invokes scrape_matches() and returns a list of the kickoff time all matches played in EPL. Matches are stored in dictionaries of keys "home_team", "away_team", and "kickoff_time"
@@ -38,7 +37,10 @@ This project investigates whether surprising English Premier League (hereinafter
 This project requires:
 - football-data.org API key
 - X API Bearer Token
-Please create a file under main called "APIkeys/" and store your key and token in a one-line .txt file respectively under this file.
+Please create a file under main called "APIkeys" and store the key and token in a one-line .txt file respectively under this file.
 E.g.,
-  - `APIkeys/matches_key.txt`
-  - `APIkeys/X_bearertoken.txt`
+│
+├── APIkeys/
+│ ├── `APIkeys/matches_key.txt`
+│ └──`APIkeys/X_bearertoken.txt`
+├── src/
