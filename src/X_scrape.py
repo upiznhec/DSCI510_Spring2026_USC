@@ -17,8 +17,8 @@ def find_and_store_club_id(token):
 
 
 def scrape_club_tweet(club_name, kickoff_utc, api_key):
-    #scrapes tweets of a given club in a certain window related to the kickoff time
-    # and return the tweet with the highest engagement
+    #scrapes tweets of a given club in a time certain window related to the kickoff time
+    # and returns a dictionary that contains data of X engagement changes pre- and post-match
 
     #reach club X account for scraping
     with open("../data/EPLClubIDs.json","r") as f3:
