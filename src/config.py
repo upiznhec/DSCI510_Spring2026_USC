@@ -11,9 +11,10 @@ DOC_DIR = os.path.join(BASE_DIR, "doc")
 MATCHES_FILE = os.path.join(DATA_DIR, "All_matches.json")
 CLUB_IDS_FILE = os.path.join(DATA_DIR, "EPLClubIDs.json")
 CLUB_NAMES_FILE = os.path.join(SRC_DIR, "EPLClubsXNameList.txt")
-BETS_FILE = os.path.join(DATA_DIR, "bets.csv")
 #This file is stored in src due to the code's unability to run
 # if it's stored in the .gitignore directory "/data"
+# not a data file, it's just a list of EPL club names.
+BETS_FILE = os.path.join(DATA_DIR, "bets.csv")
 
 #API keys
 MATCHES_KEY_FILE = os.path.join(APIKEYS_DIR, "matches_key.txt")
