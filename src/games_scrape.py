@@ -20,8 +20,8 @@ def scrape_matches(url,season) -> list: #download all match data from https://ww
     return all_matches
 
 
-def all_kickoff(api_key, url, season) -> list: # returns a list of the starting time and ending time for each match
-    all_matches = scrape_matches(api_key, url, season)
+def all_kickoff(url, season) -> list: # returns a list of the starting time and ending time for each match
+    all_matches = scrape_matches(url, season)
 
     kickoff_times = []
     for match in all_matches:
