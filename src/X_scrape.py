@@ -1,27 +1,32 @@
 import tweepy
 import json
+from config import X_TOKEN_FILE, CLUB_IDS_FILE, CLUB_NAMES_FILE
 from datetime import datetime, timedelta
 
 def find_and_store_club_id(token):
     client = tweepy.Client(bearer_token=token)
     club_ids = {}
 
-    with open("EPLClubsXNameList.txt", "r") as f1:
+    with open(CLUB_NAMES_FILE, "r") as f1:
         for line in f1:
             club_handle = line.strip()
             club_user = client.get_user(username=club_handle)
             club_ids[club_handle] = club_user.data.id
 
-    with open("../data/EPLClubIDs.json","w",encoding="utf-8") as f2:
+    with open(CLUB_IDS_FILE,"w",encoding="utf-8") as f2:
         json.dump(club_ids,f2,indent=2)
 
 
-def scrape_club_tweet(club_name, kickoff_utc, api_key):
+def scrape_club_tweet(club_name, kickoff_utc):
     #scrapes tweets of a given club in a time certain window related to the kickoff time
     # and returns a dictionary that contains data of X engagement changes pre- and post-match
 
+    #load X_API_Token
+    with open(X_TOKEN_FILE, "r") as f_xtoken:
+        api_key = f_xtoken.read().strip()
+
     #reach club X account for scraping
-    with open("../data/EPLClubIDs.json","r") as f3:
+    with open(CLUB_IDS_FILE,"r") as f3:
         club_ids = json.load(f3)
     try:
         club_id = club_ids[club_name]
@@ -50,7 +55,7 @@ def scrape_club_tweet(club_name, kickoff_utc, api_key):
     )
     pre_engagement = []
     if not pre_response.data:
-        return None
+        pre_engagement = []
     else:
         for tweet in pre_response.data:
             metrics = tweet.public_metrics
@@ -72,7 +77,7 @@ def scrape_club_tweet(club_name, kickoff_utc, api_key):
     )
     post_engagement = []
     if not post_response.data:
-        return None
+        post_engagement = []
     else:
         for tweet in post_response.data:
             metrics = tweet.public_metrics
@@ -96,10 +101,3 @@ def scrape_club_tweet(club_name, kickoff_utc, api_key):
         "post-game average engagement": post_avg,
         "engagement changes": engagement_changes,
     }
-
-
-#Get all the club's X accounts' user id -- commented out because it is costly and is a one time thing
-#with open("../APIkeys/X_bearertoken.txt", "r") as f:
-#    BEARER_TOKEN = f.read().strip()
-
-#find_and_store_club_id(BEARER_TOKEN)
