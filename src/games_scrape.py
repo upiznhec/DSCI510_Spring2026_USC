@@ -1,16 +1,16 @@
 import requests
 import json
-from config import MATCHES_FILE, MATCHES_KEY_FILE
+from config import MATCHES_FILE, MATCHES_KEY_FILE, FOOTBALL_DATA_URL
 from datetime import datetime
 
-def scrape_matches(url,season) -> list: #download all match data from https://www.football-data.org/
+def scrape_matches(season) -> list: #download all match data from https://www.football-data.org/
     #load match key token
     with open(MATCHES_KEY_FILE, "r") as f_match_token:
         api_key = f_match_token.read().strip()
     params = {"season": season}
     headers = {"X-Auth-Token": api_key}
 
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(FOOTBALL_DATA_URL, headers=headers, params=params)
     data = response.json()
     all_matches = data["matches"]
 
@@ -20,8 +20,8 @@ def scrape_matches(url,season) -> list: #download all match data from https://ww
     return all_matches
 
 
-def all_kickoff(url, season) -> list: # returns a list of the starting time and ending time for each match
-    all_matches = scrape_matches(url, season)
+def all_kickoff(season) -> list: # returns a list of the starting time and ending time for each match
+    all_matches = scrape_matches(season)
 
     kickoff_times = []
     for match in all_matches:
