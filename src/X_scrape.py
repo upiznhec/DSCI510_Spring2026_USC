@@ -3,8 +3,11 @@ import json
 from config import X_TOKEN_FILE, CLUB_IDS_FILE, CLUB_NAMES_FILE
 from datetime import datetime, timedelta
 
-def find_and_store_club_id(token):
-    client = tweepy.Client(bearer_token=token)
+def find_and_store_club_id():
+    #load X_API_Token
+    with open(X_TOKEN_FILE, "r") as f_xtoken:
+        api_key = f_xtoken.read().strip()
+    client = tweepy.Client(bearer_token=api_key)
     club_ids = {}
 
     with open(CLUB_NAMES_FILE, "r") as f1:

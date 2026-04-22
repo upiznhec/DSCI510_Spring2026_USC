@@ -14,7 +14,7 @@ def load_matches():
     for match in matches:
         if match["status"] == "FINISHED":#Only finished matches
             rows.append({
-                "kickoff_time": pd.to_datetime(match["utcDate"], utc=True),
+                "kickoff_time": pd.to_datetime(match["utcDate"], utc=True).normalize(),
                 "home_team" : match["homeTeam"]["shortName"],
                 "away_team": match["awayTeam"]["shortName"],
                 "home_goals": match["score"]["fullTime"]["home"],
@@ -26,8 +26,8 @@ def load_matches():
 
 
 def load_bets():
-    raw_df = pd.read_csv(BETS_FILE)
     conn = sqlite3.connect(DB_FILE)
+    raw_df = pd.read_csv(BETS_FILE)
     raw_df.to_sql("raw_bets", conn, index=False, if_exists="replace")
     query = """
         SELECT
@@ -58,8 +58,8 @@ def unify_team_names(df):
 
 ### Compute probabilities and "surprisingness" of results
 ### The probability of a result is calculated by (1/bet_odd)
-### A result is qualified as "surprising" if it's probability is < 0.35
-def compute_prob(df):
+### A result is qualified as "surprising" if it's probability is < 0.35, this number could be customized through input threshold in main
+def compute_probability(df):
     df["home_probability"] = 1 / df["avg_home_odds"]
     df["draw_probability"] = 1 / df["avg_draw_odds"]
     df["away_probability"] = 1 / df["avg_away_odds"]
@@ -78,17 +78,27 @@ def compute_surprise(df, threshold = 0.4):
             END AS surprising_result
         FROM matches
     """
-    result_df = pd.read_sql_query(query, conn, params=([threshold, threshold, threshold]))
+    result_df = pd.read_sql_query(query, conn, params=[threshold, threshold, threshold])
     conn.close()
 
     return result_df
 
 
-
-df = load_matches()
-#df = load_bets()
-df = unify_team_names(df)
-#df = compute_prob(df)
-print(df.columns.tolist())
-for line in df.values.tolist():
-    print(line)
+### Expand dataset to club level
+def expand_dataset_2_club(df):
+    club_rows = []
+    for index, row in df.iterrows():
+        club_rows.append({
+            "club": row["home_team"],
+            "opponent": row["away_team"],
+            "kickoff_time": row["kickoff_time"],
+            "surprise": row["surprise"]
+        })
+        club_rows.append({
+            "club": row["away_team"],
+            "opponent": row["home_team"],
+            "kickoff_time": row["kickoff_time"],
+            "surprise": row["surprise"]
+        })
+    club_df = pd.DataFrame(club_rows)
+    return club_df

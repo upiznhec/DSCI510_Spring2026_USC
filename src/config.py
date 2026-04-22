@@ -23,7 +23,7 @@ X_TOKEN_FILE = os.path.join(APIKEYS_DIR, "X_bearertoken.txt")
 #URLs
 FOOTBALL_DATA_URL = "https://api.football-data.org/v4/competitions/PL/matches"
 def get_betting_odd_csv_url(season: int):
-    season_code = f"{str(season)[2:]}{str(season+1)[2:]}"
+    season_code = f"{str(season)[-2:]}{str(season+1)[-2:]}"
     return f"https://www.football-data.co.uk/mmz4281/{season_code}/E0.csv"
     # e.g., if the season is 2025/26, the csv file would be stored in https://www.[...]/mmz4281/2526/E0.csv"
 
