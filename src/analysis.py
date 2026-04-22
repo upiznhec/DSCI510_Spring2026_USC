@@ -14,7 +14,7 @@ def load_matches():
     for match in matches:
         if match["status"] == "FINISHED":#Only finished matches
             rows.append({
-                "kickoff_time": pd.to_datetime(match["utcDate"], utc=True).normalize(),
+                "kickoff_time": pd.to_datetime(match["utcDate"], utc=True),
                 "home_team" : match["homeTeam"]["shortName"],
                 "away_team": match["awayTeam"]["shortName"],
                 "home_goals": match["score"]["fullTime"]["home"],
@@ -55,6 +55,13 @@ def unify_team_names(df):
     df["away_team"] = df["away_team"].map(standard_variant_map)
     return df
 
+def find_standard_name(name:str):
+    for standard_name, variants in TEAM_MAPPING.items():
+        for name_type, variant_name in variants.items():
+            if name == variant_name:
+                return standard_name
+    raise ValueError(f"The club name {name} is not found in TEAM_MAPPING")
+
 
 ### Compute probabilities and "surprisingness" of results
 ### The probability of a result is calculated by (1/bet_odd)
@@ -71,16 +78,18 @@ def compute_surprise(df, threshold = 0.35):
     query = """
         SELECT
             *,
-            CASE WHEN winner = 'HOME_TEAM' AND home_probability < ? THEN True
-                WHEN winner = 'DRAW' AND draw_probability < ? THEN True
-                WHEN winner = 'AWAY_TEAM' AND away_probability < ? THEN True
-                ELSE False
+            CASE WHEN winner = 'HOME_TEAM' AND home_probability < ? THEN 1
+                WHEN winner = 'DRAW' AND draw_probability < ? THEN 1
+                WHEN winner = 'AWAY_TEAM' AND away_probability < ? THEN 1
+                ELSE 0
             END AS surprising_result
         FROM matches
     """
     result_df = pd.read_sql_query(query, conn, params=[threshold, threshold, threshold])
     conn.close()
 
+    result_df["surprising_result"] = result_df["surprising_result"].astype(bool)
+    result_df["kickoff_time"] = pd.to_datetime(result_df["kickoff_time"], utc=True)
     return result_df
 
 
@@ -88,17 +97,30 @@ def compute_surprise(df, threshold = 0.35):
 def expand_dataset_2_club(df):
     club_rows = []
     for index, row in df.iterrows():
+        if not row["surprising_result"]:
+            home_surprise = "expected"
+            away_surprise = "expected"
+        elif row["winner"] == "DRAW":
+            home_surprise = "surprise_draw"
+            away_surprise = "surprise_draw"
+        elif row["winner"] == "HOME_TEAM":
+            home_surprise = "surprise_win"
+            away_surprise = "surprise_loss"
+        else:  # AWAY_TEAM
+            home_surprise = "surprise_loss"
+            away_surprise = "surprise_win"
+
         club_rows.append({
             "club": row["home_team"],
             "opponent": row["away_team"],
             "kickoff_time": row["kickoff_time"],
-            "surprise": row["surprising_result"]
+            "surprise": home_surprise
         })
         club_rows.append({
             "club": row["away_team"],
             "opponent": row["home_team"],
             "kickoff_time": row["kickoff_time"],
-            "surprise": row["surprising_result"]
+            "surprise": away_surprise
         })
     club_df = pd.DataFrame(club_rows)
     return club_df

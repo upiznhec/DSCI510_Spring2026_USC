@@ -12,6 +12,7 @@ def scrape_matches(season) -> list: #download all match data from https://www.fo
 
     response = requests.get(FOOTBALL_DATA_URL, headers=headers, params=params)
     data = response.json()
+    response.raise_for_status()
     all_matches = data["matches"]
 
     with open(MATCHES_FILE, "w") as f:

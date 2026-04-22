@@ -24,19 +24,25 @@ def main(season, threshold=0.35):
 
     for match in matches:
         if match['status'] == 'FINISHED':
-            home = match['homeTeam']['shortName']
-            away = match['awayTeam']['shortName']
+            home_short = match['homeTeam']['shortName']
+            away_short = match['awayTeam']['shortName']
+
+            #translate to standard name
+            home_std = find_standard_name(home_short)
+            away_std = find_standard_name(away_short)
 
             #get kickoff time for each match
-            kickoff_dt = pd.to_datetime(match['utcDate'], utc=True).normalize()
+            kickoff_dt = pd.to_datetime(match['utcDate'], utc=True)
 
             #Scrape engagement data from both clubs and store them
-            eng_lift_home = scrape_club_tweet(home, kickoff_dt)
-            eng_lift_away = scrape_club_tweet(away, kickoff_dt)
+            home_x_handle = TEAM_MAPPING[home_std]["x_handle"]
+            away_x_handle = TEAM_MAPPING[away_std]["x_handle"]
+            eng_lift_home = scrape_club_tweet(home_x_handle, kickoff_dt)
+            eng_lift_away = scrape_club_tweet(away_x_handle, kickoff_dt)
             if eng_lift_home:
-                engagement_dict[(home, kickoff_dt)] = eng_lift_home["engagement_changes"]
+                engagement_dict[(home_std, kickoff_dt)] = eng_lift_home["engagement_changes"]
             if eng_lift_away:
-                engagement_dict[(away, kickoff_dt)] = eng_lift_away["engagement_changes"]
+                engagement_dict[(away_std, kickoff_dt)] = eng_lift_away["engagement_changes"]
 
     ### Build the dataset
     matches_df = load_matches()
