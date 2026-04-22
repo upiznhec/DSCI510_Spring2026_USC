@@ -44,9 +44,9 @@ def main(season, threshold=0.35):
             eng_lift_home = scrape_club_tweet(home_x_handle, kickoff_dt)
             eng_lift_away = scrape_club_tweet(away_x_handle, kickoff_dt)
             if eng_lift_home:
-                engagement_dict[(home_std, kickoff_dt)] = eng_lift_home["engagement_changes"]
+                engagement_dict[(home_std, kickoff_dt)] = eng_lift_home
             if eng_lift_away:
-                engagement_dict[(away_std, kickoff_dt)] = eng_lift_away["engagement_changes"]
+                engagement_dict[(away_std, kickoff_dt)] = eng_lift_away
 
     ### Build the dataset
     matches_df = load_matches()
@@ -74,13 +74,36 @@ def main(season, threshold=0.35):
     ### Expand dataset to clubs from matches
     club_df = expand_dataset_2_club(merged_df)
 
-    ### Attach Engagement lift
-    lifts = []
+    ### Attach Engagement lift and
+    ### drop rows where engagement_changes is None, implying the club hasn't posted during pre- or post-match window
+    ### "Didn't post" is inferred from a zero average engagement, based on the assumption that
+    ### any real post from an EPL club X account generates at least 1 engagement in the window.
+    engagement_changes = []
+    pre_avg_col = []
+    post_avg_col = []
+    have_posted = []
+    initial_len = len(club_df)
     for _, row in club_df.iterrows():
         key = (row["club"], row["kickoff_time"])
-        lifts.append(engagement_dict.get(key, None))
+        entry = engagement_dict.get(key)
 
-    club_df["engagement_changes"] = lifts
+        pre_avg = entry["pre-game_average_engagement"]
+        post_avg = entry["post-game_average_engagement"]
+        pre_avg_col.append(pre_avg)
+        post_avg_col.append(post_avg)
+
+        if pre_avg == 0 or post_avg == 0:
+            engagement_changes.append(None)
+            have_posted.append(False)
+        else:
+            engagement_changes.append(entry["engagement_changes"])
+            have_posted.append(True)
+
+    club_df["engagement_changes"] = engagement_changes
+    club_df["pre_game_average_engagement"] = pre_avg_col
+    club_df["post_game_average_engagement"] = post_avg_col
+    club_df = club_df[have_posted].reset_index(drop=True)
+    print(f"Dropped {initial_len - len(club_df)} entries")
 
     return club_df
 
