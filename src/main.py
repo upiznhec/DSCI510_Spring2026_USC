@@ -102,6 +102,7 @@ def main(season, threshold=0.35):
     club_df["engagement_changes"] = engagement_changes
     club_df["pre_game_average_engagement"] = pre_avg_col
     club_df["post_game_average_engagement"] = post_avg_col
+    club_df["relative_lift"] = (club_df["engagement_changes"] / club_df["pre_game_average_engagement"])
     club_df = club_df[have_posted].reset_index(drop=True)
     print(f"Dropped {initial_len - len(club_df)} entries")
 
