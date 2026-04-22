@@ -71,9 +71,9 @@ def compute_surprise(df, threshold = 0.4):
     query = """
         SELECT
             *,
-            CASE WHEN winner = 'HOME_TEAM' AND home_prob < ? THEN True
-                WHEN winner = 'DRAW' AND draw_prob < ? THEN True
-                WHEN winner = 'AWAY_TEAM' AND away_prob < ? THEN True
+            CASE WHEN winner = 'HOME_TEAM' AND home_probability < ? THEN True
+                WHEN winner = 'DRAW' AND draw_probability < ? THEN True
+                WHEN winner = 'AWAY_TEAM' AND away_probability < ? THEN True
                 ELSE False
             END AS surprising_result
         FROM matches
@@ -92,13 +92,13 @@ def expand_dataset_2_club(df):
             "club": row["home_team"],
             "opponent": row["away_team"],
             "kickoff_time": row["kickoff_time"],
-            "surprise": row["surprise"]
+            "surprise": row["surprising_result"]
         })
         club_rows.append({
             "club": row["away_team"],
             "opponent": row["home_team"],
             "kickoff_time": row["kickoff_time"],
-            "surprise": row["surprise"]
+            "surprise": row["surprising_result"]
         })
     club_df = pd.DataFrame(club_rows)
     return club_df

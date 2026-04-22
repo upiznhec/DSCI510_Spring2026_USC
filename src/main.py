@@ -1,9 +1,10 @@
 import pandas as pd
+import numpy as np
 import sqlite3
 from config import *
 from analysis import *
 from games_scrape import scrape_matches
-from bets_scrape  import scrape_bets
+from bets_scrape import scrape_bets
 from X_scrape import scrape_club_tweet
 
 
@@ -23,8 +24,8 @@ def main(season, threshold=0.35):
 
     for match in matches:
         if match['status'] == 'FINISHED':
-            home = match['home_team']
-            away = match['away_team']
+            home = match['homeTeam']['shortName']
+            away = match['awayTeam']['shortName']
 
             #get kickoff time for each match
             kickoff_dt = pd.to_datetime(match['utcDate'], utc=True).normalize()
@@ -33,9 +34,9 @@ def main(season, threshold=0.35):
             eng_lift_home = scrape_club_tweet(home, kickoff_dt)
             eng_lift_away = scrape_club_tweet(away, kickoff_dt)
             if eng_lift_home:
-                engagement_dict[(home, kickoff_dt)] = eng_lift_home["engagement changes"]
+                engagement_dict[(home, kickoff_dt)] = eng_lift_home["engagement_changes"]
             if eng_lift_away:
-                engagement_dict[(away, kickoff_dt)] = eng_lift_away["engagement changes"]
+                engagement_dict[(away, kickoff_dt)] = eng_lift_away["engagement_changes"]
 
     ### Build the dataset
     matches_df = load_matches()
@@ -49,7 +50,8 @@ def main(season, threshold=0.35):
     query = """
         SELECT *
         FROM matches
-        LEFT JOIN bets using(matches.home_team, matches.away_team)
+        LEFT JOIN bets
+        ON matches.home_team = bets.home_team AND matches.away_team = bets.away_team;
     """
     merged_df = pd.read_sql_query(query, conn)
     conn.close()
@@ -67,7 +69,7 @@ def main(season, threshold=0.35):
         key = (row["club"], row["kickoff_time"])
         lifts.append(engagement_dict.get(key, None))
 
-    club_df["engagement_lift"] = lifts
+    club_df["engagement_changes"] = lifts
 
     return club_df
 

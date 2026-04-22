@@ -18,19 +18,3 @@ def scrape_matches(season) -> list: #download all match data from https://www.fo
         json.dump(all_matches, f, ensure_ascii=False, indent=2)
 
     return all_matches
-
-
-def all_kickoff(season) -> list: # returns a list of the starting time and ending time for each match
-    all_matches = scrape_matches(season)
-
-    kickoff_times = []
-    for match in all_matches:
-        kickoff_dt = datetime.fromisoformat(match["utcDate"].replace("Z", "+00:00"))
-        kickoff_times.append({
-            "home_team": match["homeTeam"]["shortName"],
-            "away_team": match["awayTeam"]["shortName"],
-            "kickoff_time": kickoff_dt
-        })
-
-    return kickoff_times
-

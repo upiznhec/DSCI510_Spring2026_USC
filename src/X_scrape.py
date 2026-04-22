@@ -99,8 +99,8 @@ def scrape_club_tweet(club_name, kickoff_utc):
 
     return {
         "club": club_name,
-        "kickoff time": kickoff_utc,
-        "pre-game average engagement": pre_avg,
-        "post-game average engagement": post_avg,
-        "engagement changes": engagement_changes,
+        "kickoff_time": kickoff_utc,
+        "pre-game_average_engagement": pre_avg,
+        "post-game_average_engagement": post_avg,
+        "engagement_changes": engagement_changes,
     }
