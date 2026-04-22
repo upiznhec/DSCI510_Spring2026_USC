@@ -61,7 +61,7 @@ def main(season, threshold=0.35):
         SELECT *
         FROM matches
         LEFT JOIN bets
-        ON matches.home_team = bets.home_team AND matches.away_team = bets.away_team;
+        USING (home_team, away_team);
     """
     merged_df = pd.read_sql_query(query, conn)
     conn.close()

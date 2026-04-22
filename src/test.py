@@ -2,7 +2,7 @@ import random
 import json
 import tweepy
 from datetime import datetime, timezone
-from games_scrape import scrape_matches, all_kickoff
+from games_scrape import scrape_matches
 from X_scrape import scrape_club_tweet
 
 if __name__ == "__main__":
@@ -15,12 +15,12 @@ if __name__ == "__main__":
     URL = "https://api.football-data.org/v4/competitions/PL/matches"
     study_season = 2025
 
-    matches = all_kickoff(API_KEY, URL, study_season)
-    home = input("Home team?")
-    away = input("Away team?")
-    for match in matches:
-        if match["home_team"] == home and match["away_team"] == away:
-            print(match["kickoff_time"])
+    #matches = all_kickoff(API_KEY, URL, study_season)
+    #home = input("Home team?")
+    #away = input("Away team?")
+    #for match in matches:
+    #    if match["home_team"] == home and match["away_team"] == away:
+    #        print(match["kickoff_time"])
 
 
     # Check if X scraping is successful
