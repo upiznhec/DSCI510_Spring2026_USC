@@ -65,7 +65,7 @@ def compute_probability(df):
     df["away_probability"] = 1 / df["avg_away_odds"]
     return df
 
-def compute_surprise(df, threshold = 0.4):
+def compute_surprise(df, threshold = 0.35):
     conn = sqlite3.connect(DB_FILE)
     df.to_sql("matches", conn, index=False, if_exists="replace")
     query = """

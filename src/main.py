@@ -55,6 +55,7 @@ def main(season, threshold=0.35):
     """
     merged_df = pd.read_sql_query(query, conn)
     conn.close()
+    merged_df = merged_df.dropna(subset=["avg_home_odds", "avg_draw_odds", "avg_away_odds"])#drop rows where betting odds are missing
 
     ### Compute whether the result is surprising
     merged_df = compute_probability(merged_df)
