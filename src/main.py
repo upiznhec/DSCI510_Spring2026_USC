@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import sqlite3
+import os
 from config import *
 from analysis import *
 from games_scrape import scrape_matches
@@ -17,7 +18,8 @@ def main(season, threshold=0.35):
     except ValueError:
         raise ValueError("Please check whether the season you are analyzing is valid")
 
-    find_and_store_club_id()
+    if not os.path.exists(CLUB_IDS_FILE):
+        find_and_store_club_id()
 
     engagement_dict = {}
 

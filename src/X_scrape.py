@@ -113,10 +113,20 @@ def scrape_club_tweet(club_name, kickoff_utc):
     post_avg = sum(post_engagement) / len(post_engagement) if post_engagement else 0
     engagement_changes = post_avg - pre_avg
 
-    return {
+    result = {
         "club": club_name,
         "kickoff_time": kickoff_utc,
         "pre-game_average_engagement": pre_avg,
         "post-game_average_engagement": post_avg,
         "engagement_changes": engagement_changes,
     }
+
+    # --- CACHE WRITE (this part is AI generated)---
+    # Write a JSON-serializable copy (kickoff_time must be a string on disk)
+    cache_result = dict(result)
+    cache_result["kickoff_time"] = kickoff_utc.isoformat()
+    with open(cache_path, "w") as f_cache:
+        json.dump(cache_result, f_cache, indent=2)
+    # --- END CACHE WRITE (AI generated part ends)---
+
+    return result
