@@ -5,7 +5,7 @@ from config import *
 from analysis import *
 from games_scrape import scrape_matches
 from bets_scrape import scrape_bets
-from X_scrape import scrape_club_tweet
+from X_scrape import find_and_store_club_id , scrape_club_tweet
 
 
 def main(season, threshold=0.35):
@@ -16,6 +16,8 @@ def main(season, threshold=0.35):
         scrape_bets(season)
     except ValueError:
         raise ValueError("Please check whether the season you are analyzing is valid")
+
+    find_and_store_club_id()
 
     engagement_dict = {}
 

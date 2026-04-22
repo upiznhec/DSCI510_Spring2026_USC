@@ -1,6 +1,7 @@
 import tweepy
 import json
-from config import X_TOKEN_FILE, CLUB_IDS_FILE, CLUB_NAMES_FILE
+import os
+from config import X_TOKEN_FILE, CLUB_IDS_FILE, CLUB_NAMES_FILE, ENGAGEMENT_CACHE_DIR
 from datetime import datetime, timedelta
 
 def find_and_store_club_id():
@@ -23,6 +24,21 @@ def find_and_store_club_id():
 def scrape_club_tweet(club_name, kickoff_utc):
     #scrapes tweets of a given club in a time certain window related to the kickoff time
     # and returns a dictionary that contains data of X engagement changes pre- and post-match
+
+    # --- CACHE CHECK (this part is AI generated)---
+    # Build a filesystem-safe cache filename from the club handle + kickoff time.
+    # Colons in ISO timestamps aren't valid on Windows filenames, so replace them.
+    os.makedirs(ENGAGEMENT_CACHE_DIR, exist_ok=True)
+    kickoff_str = kickoff_utc.isoformat().replace(":", "-")
+    cache_path = os.path.join(ENGAGEMENT_CACHE_DIR, f"{club_name}_{kickoff_str}.json")
+
+    if os.path.exists(cache_path):
+        with open(cache_path, "r") as f_cache:
+            cached = json.load(f_cache)
+        # kickoff_time was serialized as a string; restore it as a datetime for caller consistency
+        cached["kickoff_time"] = datetime.fromisoformat(cached["kickoff_time"])
+        return cached
+    # --- END CACHE CHECK (AI generated part ends)---
 
     #load X_API_Token
     with open(X_TOKEN_FILE, "r") as f_xtoken:

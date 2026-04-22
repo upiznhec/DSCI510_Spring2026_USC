@@ -15,6 +15,7 @@ MATCHES_FILE = os.path.join(DATA_DIR, "All_matches.json")
 CLUB_IDS_FILE = os.path.join(DATA_DIR, "EPLClubIDs.json")
 BETS_FILE = os.path.join(DATA_DIR, "bets.csv")
 DB_FILE = os.path.join(DATA_DIR, "project.db") #sql db file path.
+ENGAGEMENT_CACHE_DIR = os.path.join(DATA_DIR, "engagement_cache") #X cache file paths, so that I don't burn credits of something went wrong
 
 #API keys
 MATCHES_KEY_FILE = os.path.join(APIKEYS_DIR, "matches_key.txt")
