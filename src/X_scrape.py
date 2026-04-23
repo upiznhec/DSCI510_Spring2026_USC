@@ -25,6 +25,7 @@ def scrape_club_tweet(club_name, kickoff_utc):
     #scrapes tweets of a given club in a time certain window related to the kickoff time
     # and returns a dictionary that contains data of X engagement changes pre- and post-match
 
+    # AI generated:
     # --- CACHE CHECK (this part is AI generated)---
     # Build a filesystem-safe cache filename from the club handle + kickoff time.
     # Colons in ISO timestamps aren't valid on Windows filenames, so replace them.
@@ -39,6 +40,7 @@ def scrape_club_tweet(club_name, kickoff_utc):
         cached["kickoff_time"] = datetime.fromisoformat(cached["kickoff_time"])
         return cached
     # --- END CACHE CHECK (AI generated part ends)---
+    # AI generated up until this point
 
     #load X_API_Token
     with open(X_TOKEN_FILE, "r") as f_xtoken:
@@ -121,6 +123,7 @@ def scrape_club_tweet(club_name, kickoff_utc):
         "engagement_changes": engagement_changes,
     }
 
+    # AI generated:
     # --- CACHE WRITE (this part is AI generated)---
     # Write a JSON-serializable copy (kickoff_time must be a string on disk)
     cache_result = dict(result)
@@ -128,5 +131,6 @@ def scrape_club_tweet(club_name, kickoff_utc):
     with open(cache_path, "w") as f_cache:
         json.dump(cache_result, f_cache, indent=2)
     # --- END CACHE WRITE (AI generated part ends)---
+    # AI generated up until this point
 
     return result
