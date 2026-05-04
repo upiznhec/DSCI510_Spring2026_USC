@@ -128,6 +128,30 @@ Please create a file under main called "APIkeys" and store the key and token in 
 
 ## Analysis
 
+## Summary of Results
+This project finds a clear and asymmetric relationship between match outcomes and social media engagement. Using an engagement lift metric (ratio of post-match to pre-match average tweet engagement), the analysis shows that surprising wins are the primary driver of engagement spikes, while other unexpected outcomes have little to no positive effect.
+1. **Result 1: Impact of match outcome type on engagement**
+   1. Surprise wins generate the strongest engagement response (Median lift ≈ 3.4×, significantly above baseline)
+   2. Expected results show no change (≈ 1.0× baseline)
+   3. Surprise losses (~0.9×) and surprise draws (~0.4×) do not produce positive engagement lift.
+   4. Key insight: only positive surprises (wins) meaningfully increase fan engagement, not unexpected outcomes in general.
+
+2. **Result 2: Club size and variation in engagement lift**
+   1. Smaller clubs experience the largest relative engagement spikes (E.g. Wolverhampton (~10×), Brentford (~8.8×), Burnley (~8.3×))
+   2. Top clubs show smaller relative increases: Liverpool (~2.6×), Manchester United (~3.3×), Arsenal (~3.7×)
+   3. Explanation
+      1. Top clubs are rarely underdogs → fewer “surprise win” cases.
+      2. Smaller clubs have lower baseline engagement → more room for relative growth.
+   4. Key insight: engagement lift is inversely related to baseline audience size.
+
+3. **Result 3: Drivers of engagement lift**
+   1. Engagement lift is primarily driven by post-match engagement levels
+      1. Correlation (lift vs. post-match) ≈ 0.41
+      2. Correlation (lift vs. pre-match) ≈ -0.11
+   2. Pre- and post-match engagement are strongly correlated (~0.71), reflecting underlying club size and fanbase.
+   3. Key insight: spikes in engagement come mainly from post-match reactions, not pre-match buildup
+
+Overall, the findings demonstrate that fan engagement on X is highly sensitive to positive surprises, particularly underdog victories, and that relative lift is a robust way to compare engagement across clubs with vastly different audience sizes. The use of time-windowed average engagement (instead of single tweets) ensures a more reliable and consistent measurement of match-driven engagement effects.
 
 ## AI Usage Statement
 AI is used and ONLY used in small sections of X_scrape.py to generate the piece of code which is used to build a filesystem-safe cache filename from the club handle + kickoff time and to write a JSON-serializable copy (kickoff_time must be a string on disk). The parts that are AI-generated are labled as "#AI generated:" and ends with "# AI generated up until this point". The coding agent being used is Claude from Anthropic.
