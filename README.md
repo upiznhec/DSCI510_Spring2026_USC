@@ -1,15 +1,39 @@
 ## Analyzing the Correlation Between Surprising Match Results and X Tweet Engagement Levels for English Premier League Clubs in the 2025-2026 Season
 **DSCI 510 – Principles of Programming for Data Science**  
+
 Nanpu Chen
+
 University of Southern California – Spring 2026
 
-## Project Overview
+## Introduction
 This project investigates whether surprising English Premier League (hereinafter referred to as “EPL”) match outcomes influence engagement levels on EPL club’s official X (formerly Twitter) account. Pre-match betting odds will be used to determine expected match results and actual match results will be compared to identify whether the result is a surprising win, a surprising draw, an expected result, or a surprising loss. Engagement level is analyzed by collecting certain metrics (likes, retweets, and replies) from post-match posts of the clubs’ main official X account. The study aims to evaluate whether unexpected match results correlate with EPL clubs’ social media engagement.
 
 ### Project Precautions
 This project needs an X bearer token to scrape the tweets from the EPL club's X account. You can create an X bearer token at X Development Concole (access through https://developer.x.com/). You also need to purchase enough credit to run this project or else X would return either 402 Payment Required or 403 Forbidden. For a full season, the project takes around $60-70 of credit to run. This project also auto-saves caches of engagement data so if something crashes while running results.ipynb or main.py, what is already scraped would store safely in your directory so there is no need to concern having to burn extra money to re-run and fix.
 
 This project also uses an API key to access all the match data, that key could be found and generate by accessing https://www.football-data.org/.
+
+## Data sources
+**Premier League Match Statistics (2025-2026 season)**
+- Source URL: https://www.football-data.org/
+- Type: API
+- List of fields: match_id, competition, utcDat, homeTeam.name, awayTeam.name, score.fullTime, etc.
+- Format: JSON
+- Data size: ~380
+
+**Premier League Betting Odds (Pre-Match Market Data)**
+- Source URL: https://www.football-data.co.uk/englandm.php
+- Type: File
+- List of fields: Div (League Division), Date(Match Date(dd/mm/yy)), Time(Time of match kick off), HomeTeam(Home Team), AwayTeam (Away Team), (Home win odds, draw odds, and away win odds data across 19 bet platforms)
+- Format: CSV
+- Data size: ~380
+
+**Official Club X(Twitter) Engagement Data**
+- Source URL: Official club accounts (e.g.,https://x.com/Arsenal,https://x.com/ManCity, etc. – total 20 clubs)
+- Type: HTML web page, retrieve via X official API
+- List of fields: tweet_id, club_account, created_at (Post Timestamp), text, public_metrics.like_count, public_metrics.reply_count, public_metrics.retweet_count, public_metrics.quote_count
+- Format: JSON
+- Data size: ~5000
 
 ## Files
 **EPLClubsXNameList.txt** is a list of X handles (e.g. "@ManCity", "@afcbournemouth", etc.) which 2025/26 season EPL clubs use on X (former twitter)
@@ -43,7 +67,16 @@ This project also uses an API key to access all the match data, that key could b
 **main.py** is the single entry point for the full pipeline. Calling main(season, threshold=0.35) scrapes matches, betting odds, and X engagement; unifies team names across sources; merges via SQLite; computes implied probabilities and surprise categories; expands to the club level; and attaches four engagement columns to each club-match: pre_game_average_engagement, post_game_average_engagement, engagement_changes (post minus pre), and relative_lift (engagement_changes/pre_game_average_engagement). 
 Based on the assumption that any real post from an EPL club X account would generate at least 1 engagement, club-matches with 0 pre- or post-match average engagement is treated as "the club didn't post anything in the window" and that row is dropped. The function returns the final analysis DataFrame.
 
-## Repository Structure
+## How To Run
+1. **X API**: Obtain a official X API(v2) Bearer Token through X developer console https://console.x.com/. Create a folder under the main branch named **"APIkeys"** and store the Bearer Token in a one-line .txt file as **X_bearertoken.txt** inside the folder (Refer to the "Repoitory Structure" section for storing location). Scraping X costs fees. Please estimate a \$60 - \$70 cost in running this project.
+2. **matches data API**: Obtain a free game data API key from https://www.football-data.org/. Under **APIkeys/**, store the APIkey as store the Bearer Token in a one-line .txt file as **matches_key.txt** inside the folder
+3. **data/ folder**: Create a **"data/"** folder under the main branch to store all the scraped data (Refer to the "Repoitory Structure" section for storing location)
+4. **download required libraries**: This project requires SQLite3 library to run. If you don’t have it installed, please download and install it before proceeding. Please refer to requirements.txt for other required libraries to run this project.
+5. **test.py**: Run **test.py** under **src/** to see if everything is working as it should and troubleshoot if exceptions occured. Running this would cost a few cents as it tests whether the X scraping functions are working.
+6. **main.py**: Run **main.py** under **src/** to go through the whole analysis pipeline.
+7. **results.ipynb**: Run **results.ipynb** under **src/** to generate analysis results.
+
+### Repository Structure
     │
     ├── src/
     │ ├── results.ipynb # Analysis notebook and result graphs creation
@@ -60,6 +93,13 @@ Based on the assumption that any real post from an EPL club X account would gene
     │ ├── Nanpu_Chen_progress_report.pdf # Progress report as of April 8, 2026
     │ └── Nanpu_Chen_presentation.pdf # Final presentation slides
     │
+    ├── results/
+    │ └── #inside contains png image files of plots and results
+    │
+    ├── APIkeys/ #gitignored
+    │ ├── matches_key.txt # Please create and store your https://www.football-data.org/ API key here as a one-line .txt file
+    │ └── X_bearertoken.txt # Please create and store your X Bearer Token here as a one-line .txt file
+    │
     ├── data/ #gitignored
     │ ├── engagement_cache/ # Per-club-match JSON cache (so that you don't burn extra X token credits when something crashe)
     │ ├── All_matches.json # Raw matches from football-data API
@@ -71,7 +111,7 @@ Based on the assumption that any real post from an EPL club X account would gene
     ├── .gitignore # Excludes data, results, API keys
     └── README.md
 
-## API Requirements
+### API Requirements
 This project requires:
 - football-data.org API key
 - X API Bearer Token
@@ -85,5 +125,9 @@ Please create a file under main called "APIkeys" and store the key and token in 
     ├── src/
     ├── doc/
 
+
+## Analysis
+
+
 ## AI Usage Statement
-AI is used and ONLY used in small sections of X_scrape.py to generate the piece of code which is used to build a filesystem-safe cache filename from the club handle + kickoff time and to write a JSON-serializable copy (kickoff_time must be a string on disk). The parts that are AI-generated is labled as "#AI generated:" and ends with "# AI generated up until this point". The coding agent being used is Claude from Anthropic.
+AI is used and ONLY used in small sections of X_scrape.py to generate the piece of code which is used to build a filesystem-safe cache filename from the club handle + kickoff time and to write a JSON-serializable copy (kickoff_time must be a string on disk). The parts that are AI-generated are labled as "#AI generated:" and ends with "# AI generated up until this point". The coding agent being used is Claude from Anthropic.
