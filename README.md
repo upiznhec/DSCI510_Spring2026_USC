@@ -109,7 +109,8 @@ Based on the assumption that any real post from an EPL club X account would gene
     │
     ├── requirement.txt
     ├── .gitignore # Excludes data, results, API keys
-    └── README.md
+    ├── README.md
+    └── .env.example
 
 ### API Requirements
 This project requires:
