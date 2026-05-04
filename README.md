@@ -1,4 +1,4 @@
-## Analyzing the Correlation Between Surprising Match Results and X Tweet Engagement Levels for English Premier League Clubs in the 2025-2026 Season
+# Analyzing the Correlation Between Surprising Match Results and X Tweet Engagement Levels for English Premier League Clubs in the 2025-2026 Season
 **DSCI 510 – Principles of Programming for Data Science**  
 
 Nanpu Chen
@@ -127,6 +127,44 @@ Please create a file under main called "APIkeys" and store the key and token in 
 
 
 ## Analysis
+**Step1: Data Collection**
+- Match data for the 2025–2026 Premier League season is retrieved via the football-data.org API and stored locally as JSON.
+- Pre-match betting odds are downloaded as CSV from football-data.co.uk.
+- Engagement data is collected from X (Twitter) using the official API, querying each club’s account within defined time windows around each match.
+
+**Step2: Data Standardization and Storage**
+- Since different data sources use inconsistent team names, a mapping dictionary is used to unify club names across datasets.
+- Data is stored in a combination of formats (JSON, CSV, SQLite)
+- Match and betting datasets are merged on (home_team, away_team) after cleaning missing values.
+
+**Step3: Engagement Measurement**
+- For each club and match, tweets are collected within two time windows:
+  1. Pre-match: 6 hours before kickoff
+  2. Post-match: from 105 minutes after kickoff to 6 hours later
+- Engagement is calculated per tweet as: likes + replies + retweets + quotes
+- The analysis uses average engagement within each window, rather than a single tweet, to improve robustness.
+
+**Step4: Engagement Lift Calculation**
+- Engagement change is defined as: post_avg - pre_avg
+- Relative engagement lift is computed as: relative_lift = (post_avg - pre_avg) / pre_avg
+- Matches where a club did not post (i.e., zero engagement in either window) are filtered out to avoid invalid comparisons.
+
+**Step5: Modeling Match Expectations**
+- Betting odds are converted into implied probabilities: probability = 1 / odds
+- A result is classified as “surprising” if its probability is below a threshold (default = 0.35).
+- Each match is labeled accordingly, whether "expected", "surprise_win", "surprise_draw", or "surprise_loss"
+
+**Step6: Club-Level Dataset Construction**
+- Each match is expanded into two club-level observations (home and away perspectives).
+- Surprise labels are assigned per club (e.g., one team’s surprise win corresponds to the opponent’s surprise loss.)
+
+**Step7: Final Dataset and Analysis**
+- Engagement metrics are joined with match-level features to form the final dataset.
+- The dataset is filtered to include only valid observations where engagement can be measured.
+- Analysis is then performed on:
+  1. Engagement lift by surprise category
+  2. Differences across club sizes
+  3. Correlations between pre-match, post-match, and relative engagement
 
 ## Summary of Results
 This project finds a clear and asymmetric relationship between match outcomes and social media engagement. Using an engagement lift metric (ratio of post-match to pre-match average tweet engagement), the analysis shows that surprising wins are the primary driver of engagement spikes, while other unexpected outcomes have little to no positive effect.
